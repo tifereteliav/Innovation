@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>סדנת חדשנות בבינה מלאכותית</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* הגדרות כלליות לגוף הדף והרקע הדינמי */
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: #0f172a; /* צבע רקע אחיד כבסיס */
+            color: #e2e8f0;
+            overflow-x: hidden; /* מונע גלילה אופקית */
+            position: relative;
+        }
+
+        /* קנבס לאנימציית החלקיקים - ממוקם מאחורי כל התוכן */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.7;
+        }
+        
+        /* הגדרות לכותרת הראשית עם אפקט זוהר */
+        .glowing-title {
+            text-shadow: 0 0 5px #60a5fa, 0 0 10px #c084fc, 0 0 15px #60a5fa;
+            animation: pulse-glow 2s infinite alternate;
+        }
+
+        /* אנימציית "פעימת זוהר" לכותרת */
+        @keyframes pulse-glow {
+            from { text-shadow: 0 0 5px #60a5fa, 0 0 10px #c084fc, 0 0 15px #60a5fa; }
+            to { text-shadow: 0 0 10px #60a5fa, 0 0 20px #c084fc, 0 0 30px #60a5fa; }
+        }
+
+        /* אנימציה לכניסת כרטיסים על גלילה */
+        .card-enter {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .card-enter-active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* סגנון למסגרת זוהרת ומעוגלת יותר */
+        .glowing-border {
+            position: relative;
+            z-index: 10; /* מעל הרקע הדינמי */
+            border: 3px solid transparent;
+            border-image: linear-gradient(45deg, #60a5fa, #c084fc);
+            border-image-slice: 1;
+            box-shadow: 0 0 15px #60a5fa, 0 0 25px #c084fc;
+            border-radius: 1.5rem; /* מעגל את הפינות */
+            transition: all 0.3s ease-in-out;
+        }
+        
+        /* אפקט ריחוף (הובר) לכרטיסים */
+        .glowing-border:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px #60a5fa, 0 0 40px #c084fc, 0 0 60px #60a5fa;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- קנבס לאנימציית רקע של חלקיקים -->
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="container mx-auto px-4 py-8 md:py-16 relative z-10">
+
+        <!-- כותרת ראשית -->
+        <header class="text-center mb-12 md:mb-20">
+            <h1 class="text-4xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400 leading-tight mb-4 glowing-title">
+                הולך להיות מטורף!
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto font-bold">
+                סדנת חדשנות בבינה מלאכותית<br>
+                למדריכות קליניות
+            </p>
+            <!-- אייקונים של כלי AI -->
+            <div class="flex justify-center items-center gap-4 mt-6">
+                <svg class="h-8 w-8 text-blue-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9C5.373 21 3 18.627 3 12S5.373 3 12 3c4.686 0 8.5 3.125 9.773 7.5" />
+                </svg>
+                <svg class="h-8 w-8 text-purple-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 10h2m10 0h2M3 14h2m10 0h2m0 0a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4a1 1 0 011-1zm0 0H7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 00-1-1z" />
+                </svg>
+                <svg class="h-8 w-8 text-blue-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+        </header>
+
+        <!-- תוכן מרכזי -->
+        <main class="grid md:grid-cols-2 gap-8 md:gap-16 items-start">
+            <!-- צד ימין - תיאור הסדנה (פרוס לשני קטעים) -->
+            <div class="space-y-6">
+                <!-- קטע ראשון מפוצל -->
+                <div class="bg-gray-800 p-8 rounded-3xl shadow-xl card-enter glowing-border">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4 text-purple-400">
+                        היי מדריכות יקרות,
+                    </h2>
+                    <p class="text-lg md:text-xl leading-relaxed text-gray-300">
+                        שמחות לבשר לכן על פתיחת ההרשמה הקרובה לסדנה ייחודית חדשנית ומעשית בת יומיים שתוכננה במיוחד עבור אחיות מדריכות קליניות.
+                    </p>
+                </div>
+                <!-- קטע שני מפוצל -->
+                <div class="bg-gray-800 p-8 rounded-3xl shadow-xl card-enter glowing-border">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4 text-blue-400">
+                        מה מחכה לכן בסדנה?
+                    </h3>
+                    <p class="text-lg md:text-xl leading-relaxed text-gray-300">
+                        נצלול יחד לעולם המרתק של בינה מלאכותית ונלמד כיצד להשתמש בכלים חדשניים וחינמיים שמשנים ממש עכשיו את הדרך בה אנחנו מדריכות. נגלה סודות טריקים ושיטות עבודה שיהפכו את ההדרכות שלכן לחדשניות מדויקות ומותאמות אישית.
+                    </p>
+                </div>
+            </div>
+
+            <!-- צד שמאל - דגשים ופרטים חשובים -->
+            <div class="space-y-6">
+                <!-- קטע פרטים טכניים -->
+                <div class="bg-gray-800 p-8 rounded-3xl shadow-lg card-enter glowing-border">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4 text-blue-400">
+                        פרטים טכניים:
+                    </h3>
+                    <ul class="space-y-3 text-lg leading-relaxed text-gray-300">
+                        <li>
+                            <span class="font-semibold text-purple-300">מתי?</span>
+                            <br>
+                            4.9 ו-29.9
+                            <br>
+                            בשעות 12:00-16:00
+                        </li>
+                        <li>
+                            <span class="font-semibold text-purple-300">איפה?</span>
+                            <br>
+                            חדר חדשנות גונן ח'
+                        </li>
+                    </ul>
+                </div>
+                <!-- כרטיס מה תקבלי -->
+                <div class="bg-gray-800 p-8 rounded-3xl shadow-lg card-enter glowing-border">
+                    <div class="flex items-center gap-4 mb-4">
+                        <svg class="h-10 w-10 text-purple-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="text-2xl md:text-3xl font-bold text-purple-300">
+                            ומה בסיום?
+                        </h3>
+                    </div>
+                    <p class="text-lg leading-relaxed text-gray-300">
+                        כל משתתפת תצא עם תוצרי למידה מעשיים שנוצרו במהלך הסדנה ויוכלו לשמש להדרכת סטודנטים או אחיות חדשות.
+                    </p>
+                </div>
+                <!-- כרטיס דרישות ומגבלות -->
+                <div class="bg-gray-800 p-8 rounded-3xl shadow-lg card-enter glowing-border">
+                    <h3 class="text-2xl md:text-3xl font-bold mb-4 text-blue-400">
+                        פרטים חשובים:
+                    </h3>
+                    <ul class="space-y-4 text-lg">
+                        <li class="flex items-center gap-3">
+                            <svg class="h-6 w-6 text-red-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="font-semibold text-red-400">מספר המקומות מוגבל ל-25 משתתפות בלבד - כל הקודמת זוכה!</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="h-6 w-6 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L12 19.25L14.25 17m-4.5-5L12 9.75L14.25 12m-2.25 7.5v-7.5M12 21a9 9 0 110-18 9 9 0 010 18z" />
+                            </svg>
+                            <span class="text-gray-300">הגעה עם מחשב נייד או טאבלט - חובה.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="h-6 w-6 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span class="text-gray-300">התחייבות להשתתפות מלאה בשני ימי הסדנה.</span>
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <svg class="h-6 w-6 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8s-9-3.582-9-8 4.03-8 9-8 9 3.582 9 8z" />
+                            </svg>
+                            <span class="text-gray-300">נא לעדכן את סלי מראש לגבי הנושא בו תרצי להתמקד במהלך הסדנה.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+
+        <!-- קריאה לפעולה -->
+        <section class="text-center mt-12 md:mt-20">
+            <div class="bg-gray-800 text-gray-200 p-8 md:p-12 rounded-3xl shadow-2xl glowing-border glowing-button-container">
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    <span class="text-4xl">💡</span>
+                    <h3 class="text-3xl md:text-4xl font-bold">
+                        ההרשמה תיפתח בקרוב!
+                    </h3>
+                </div>
+                <p class="text-lg md:text-xl mb-6 text-gray-300">
+                    הישארו מעודכנות כדי לתפוס את מקומכן בסדנה.
+                </p>
+                <button disabled class="px-8 py-4 bg-gray-600 text-white rounded-full text-xl font-bold cursor-not-allowed">
+                    ההרשמה נפתחת בקרוב
+                </button>
+            </div>
+        </section>
+        
+        <!-- פוטר מעודכן -->
+        <div class="bg-gray-800 p-6 md:p-8 rounded-3xl shadow-lg text-center mt-12 md:mt-20 card-enter glowing-border">
+            <p class="text-lg font-semibold text-gray-400">
+                מחכות לכן
+            </p>
+            <p class="mt-2 text-xl font-bold text-gray-200">
+                סלי אלפרסי<br>
+                מירה שורק<br>
+                תפארת אליאב
+            </p>
+        </div>
+        
+        <!-- אייקונים של כלי AI בתחתית הדף -->
+        <div class="flex justify-center items-center gap-4 mt-6">
+            <svg class="h-8 w-8 text-blue-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9C5.373 21 3 18.627 3 12S5.373 3 12 3c4.686 0 8.5 3.125 9.773 7.5" />
+            </svg>
+            <svg class="h-8 w-8 text-purple-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 10h2m10 0h2M3 14h2m10 0h2m0 0a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4a1 1 0 011-1zm0 0H7a1 1 0 00-1 1v4a1 1 0 001 1h4a1 1 0 001-1v-4a1 1 0 00-1-1z" />
+            </svg>
+            <svg class="h-8 w-8 text-blue-400 drop-shadow-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+        </div>
+
+    </div>
+
+    <!-- סקריפט לאנימציות -->
+    <script>
+        // סקריפט לאנימציית החלקיקים ברקע
+        function initParticles() {
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const numParticles = Math.min(100, canvas.width / 5);
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = Math.random() * 0.5 - 0.25;
+                    this.speedY = Math.random() * 0.5 - 0.25;
+                    this.color = `rgba(100, 150, 255, ${Math.random() * 0.5 + 0.5})`;
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                    if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function createParticles() {
+                for (let i = 0; i < numParticles; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function handleParticles() {
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+
+                    for (let j = i; j < particles.length; j++) {
+                        const dx = particles[i].x - particles[j].x;
+                        const dy = particles[i].y - particles[j].y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(150, 180, 255, ${1 - (distance / 100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(particles[i].x, particles[i].y);
+                            ctx.lineTo(particles[j].x, particles[j].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                handleParticles();
+                requestAnimationFrame(animate);
+            }
+            
+            createParticles();
+            animate();
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                particles.length = 0; // ניקוי המערך והתחלה מחדש
+                createParticles();
+            });
+        }
+        
+        // סקריפט לאנימציית כרטיסים בגלילה
+        document.addEventListener('DOMContentLoaded', () => {
+            initParticles();
+
+            const cards = document.querySelectorAll('.card-enter');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('card-enter-active');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.2 });
+
+            cards.forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
